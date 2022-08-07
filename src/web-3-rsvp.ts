@@ -4,9 +4,9 @@ import {
   ConfirmedAttendee,
   DepositsPaidOut,
   NewEventCreated,
-  NewRSVP
-} from "../generated/Web3RSVP/Web3RSVP"
-import {  Account, RSVP, Confirmation, Event  } from "../generated/schema"
+  NewRSVP,
+} from "../generated/Web3RSVP/Web3RSVP";
+import { Account, RSVP, Confirmation, Event } from "../generated/schema";
 import { integer } from "@protofire/subgraph-toolkit";
 
 export function handleConfirmedAttendee(event: ConfirmedAttendee): void {
@@ -61,6 +61,7 @@ export function handleNewEventCreated(event: NewEventCreated): void {
         const name = value.get("name");
         const description = value.get("description");
         const link = value.get("link");
+        const imagePath = value.get("image");
 
         if (name) {
           newEvent.name = name.toString();
@@ -72,6 +73,18 @@ export function handleNewEventCreated(event: NewEventCreated): void {
 
         if (link) {
           newEvent.link = link.toString();
+        }
+        if (imagePath) {
+          const imageURL =
+            "https://ipfs.io/ipfs/" +
+            event.params.eventDataCID +
+            imagePath.toString();
+          newEvent.imageURL = imageURL;
+        } else {
+          // return fallback image if no imagePath
+          const fallbackURL =
+            "https://ipfs.io/ipfs/bafybeibssbrlptcefbqfh4vpw2wlmqfj2kgxt3nil4yujxbmdznau3t5wi/event.png";
+          newEvent.imageURL = fallbackURL;
         }
       }
     }
