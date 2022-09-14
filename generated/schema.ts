@@ -155,6 +155,15 @@ export class Event extends Entity {
     this.set("deposit", Value.fromBigInt(value));
   }
 
+  get eventCost(): BigInt {
+    let value = this.get("eventCost");
+    return value!.toBigInt();
+  }
+
+  set eventCost(value: BigInt) {
+    this.set("eventCost", Value.fromBigInt(value));
+  }
+
   get paidOut(): boolean {
     let value = this.get("paidOut");
     return value!.toBoolean();
@@ -171,6 +180,15 @@ export class Event extends Entity {
 
   set totalRSVPs(value: BigInt) {
     this.set("totalRSVPs", Value.fromBigInt(value));
+  }
+
+  get isDisabled(): boolean {
+    let value = this.get("isDisabled");
+    return value!.toBoolean();
+  }
+
+  set isDisabled(value: boolean) {
+    this.set("isDisabled", Value.fromBoolean(value));
   }
 
   get totalConfirmedAttendees(): BigInt {

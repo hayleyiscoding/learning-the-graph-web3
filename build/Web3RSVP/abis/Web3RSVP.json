@@ -42,6 +42,25 @@
       },
       {
         "indexed": false,
+        "internalType": "bool",
+        "name": "isDisabled",
+        "type": "bool"
+      }
+    ],
+    "name": "DisableEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "eventID",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "creatorAddress",
         "type": "address"
@@ -61,6 +80,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "eventCost",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "deposit",
         "type": "uint256"
       },
@@ -69,6 +94,12 @@
         "internalType": "string",
         "name": "eventDataCID",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isDisabled",
+        "type": "bool"
       }
     ],
     "name": "NewEventCreated",
@@ -142,6 +173,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "eventCost",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
         "name": "eventDataCID",
         "type": "string"
@@ -163,6 +199,19 @@
     "name": "createNewRSVP",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "eventId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "disableEvent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -206,8 +255,18 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "eventCost",
+        "type": "uint256"
+      },
+      {
         "internalType": "bool",
         "name": "paidOut",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isDisabled",
         "type": "bool"
       }
     ],

@@ -50,6 +50,28 @@ export class DepositsPaidOut__Params {
   }
 }
 
+export class DisableEvent extends ethereum.Event {
+  get params(): DisableEvent__Params {
+    return new DisableEvent__Params(this);
+  }
+}
+
+export class DisableEvent__Params {
+  _event: DisableEvent;
+
+  constructor(event: DisableEvent) {
+    this._event = event;
+  }
+
+  get eventID(): Bytes {
+    return this._event.parameters[0].value.toBytes();
+  }
+
+  get isDisabled(): boolean {
+    return this._event.parameters[1].value.toBoolean();
+  }
+}
+
 export class NewEventCreated extends ethereum.Event {
   get params(): NewEventCreated__Params {
     return new NewEventCreated__Params(this);
@@ -79,12 +101,20 @@ export class NewEventCreated__Params {
     return this._event.parameters[3].value.toBigInt();
   }
 
-  get deposit(): BigInt {
+  get eventCost(): BigInt {
     return this._event.parameters[4].value.toBigInt();
   }
 
+  get deposit(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
   get eventDataCID(): string {
-    return this._event.parameters[5].value.toString();
+    return this._event.parameters[6].value.toString();
+  }
+
+  get isDisabled(): boolean {
+    return this._event.parameters[7].value.toBoolean();
   }
 }
 
@@ -117,7 +147,9 @@ export class Web3RSVP__idToEventResult {
   value3: BigInt;
   value4: BigInt;
   value5: BigInt;
-  value6: boolean;
+  value6: BigInt;
+  value7: boolean;
+  value8: boolean;
 
   constructor(
     value0: Bytes,
@@ -126,7 +158,9 @@ export class Web3RSVP__idToEventResult {
     value3: BigInt,
     value4: BigInt,
     value5: BigInt,
-    value6: boolean
+    value6: BigInt,
+    value7: boolean,
+    value8: boolean
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -135,6 +169,8 @@ export class Web3RSVP__idToEventResult {
     this.value4 = value4;
     this.value5 = value5;
     this.value6 = value6;
+    this.value7 = value7;
+    this.value8 = value8;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -145,7 +181,9 @@ export class Web3RSVP__idToEventResult {
     map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
-    map.set("value6", ethereum.Value.fromBoolean(this.value6));
+    map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
+    map.set("value7", ethereum.Value.fromBoolean(this.value7));
+    map.set("value8", ethereum.Value.fromBoolean(this.value8));
     return map;
   }
 
@@ -173,8 +211,16 @@ export class Web3RSVP__idToEventResult {
     return this.value5;
   }
 
-  getPaidOut(): boolean {
+  getEventCost(): BigInt {
     return this.value6;
+  }
+
+  getPaidOut(): boolean {
+    return this.value7;
+  }
+
+  getIsDisabled(): boolean {
+    return this.value8;
   }
 }
 
@@ -186,7 +232,7 @@ export class Web3RSVP extends ethereum.SmartContract {
   idToEvent(param0: Bytes): Web3RSVP__idToEventResult {
     let result = super.call(
       "idToEvent",
-      "idToEvent(bytes32):(bytes32,string,address,uint256,uint256,uint256,bool)",
+      "idToEvent(bytes32):(bytes32,string,address,uint256,uint256,uint256,uint256,bool,bool)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
 
@@ -197,14 +243,16 @@ export class Web3RSVP extends ethereum.SmartContract {
       result[3].toBigInt(),
       result[4].toBigInt(),
       result[5].toBigInt(),
-      result[6].toBoolean()
+      result[6].toBigInt(),
+      result[7].toBoolean(),
+      result[8].toBoolean()
     );
   }
 
   try_idToEvent(param0: Bytes): ethereum.CallResult<Web3RSVP__idToEventResult> {
     let result = super.tryCall(
       "idToEvent",
-      "idToEvent(bytes32):(bytes32,string,address,uint256,uint256,uint256,bool)",
+      "idToEvent(bytes32):(bytes32,string,address,uint256,uint256,uint256,uint256,bool,bool)",
       [ethereum.Value.fromFixedBytes(param0)]
     );
     if (result.reverted) {
@@ -219,7 +267,9 @@ export class Web3RSVP extends ethereum.SmartContract {
         value[3].toBigInt(),
         value[4].toBigInt(),
         value[5].toBigInt(),
-        value[6].toBoolean()
+        value[6].toBigInt(),
+        value[7].toBoolean(),
+        value[8].toBoolean()
       )
     );
   }
@@ -318,8 +368,12 @@ export class CreateNewEventCall__Inputs {
     return this._call.inputValues[2].value.toBigInt();
   }
 
+  get eventCost(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
   get eventDataCID(): string {
-    return this._call.inputValues[3].value.toString();
+    return this._call.inputValues[4].value.toString();
   }
 }
 
@@ -357,6 +411,36 @@ export class CreateNewRSVPCall__Outputs {
   _call: CreateNewRSVPCall;
 
   constructor(call: CreateNewRSVPCall) {
+    this._call = call;
+  }
+}
+
+export class DisableEventCall extends ethereum.Call {
+  get inputs(): DisableEventCall__Inputs {
+    return new DisableEventCall__Inputs(this);
+  }
+
+  get outputs(): DisableEventCall__Outputs {
+    return new DisableEventCall__Outputs(this);
+  }
+}
+
+export class DisableEventCall__Inputs {
+  _call: DisableEventCall;
+
+  constructor(call: DisableEventCall) {
+    this._call = call;
+  }
+
+  get eventId(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
+}
+
+export class DisableEventCall__Outputs {
+  _call: DisableEventCall;
+
+  constructor(call: DisableEventCall) {
     this._call = call;
   }
 }

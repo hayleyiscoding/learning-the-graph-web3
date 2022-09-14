@@ -5,6 +5,7 @@ import {
   DepositsPaidOut,
   NewEventCreated,
   NewRSVP,
+  DisableEvent,
 } from "../generated/Web3RSVP/Web3RSVP";
 import { Account, RSVP, Confirmation, Event } from "../generated/schema";
 import { integer } from "@protofire/subgraph-toolkit";
@@ -52,6 +53,8 @@ export function handleNewEventCreated(event: NewEventCreated): void {
     newEvent.paidOut = false;
     newEvent.totalRSVPs = integer.ZERO;
     newEvent.totalConfirmedAttendees = integer.ZERO;
+    newEvent.isDisabled = event.params.isDisabled;
+    newEvent.eventCost = event.params.eventCost;
 
     let metadata = ipfs.cat(event.params.eventDataCID + "/data.json");
 
@@ -102,6 +105,14 @@ function getOrCreateAccount(address: Address): Account {
     account.save();
   }
   return account;
+}
+
+export function handleDisableEvent(event: DisableEvent): void {
+  let singleEvent = Event.load(event.params.eventID.toHex());
+  if (singleEvent) {
+    singleEvent.isDisabled = event.params.isDisabled;
+    singleEvent.save();
+  }
 }
 
 export function handleNewRSVP(event: NewRSVP): void {
